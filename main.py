@@ -216,3 +216,6 @@ print(f"A LA FIN (Date : {my_df.index[-1]}) :\n     PorteFeuille : {my_df['Porte
       f"     Nbr Action(s) : {my_df['NbrAction'].values[-1]}\n"
       f"     Sécurisé : {my_df['Secu'].values[-1]}\n"
       f"     Mise : {my_df['Mise'].values[-1]}")
+
+my_df.to_csv(r'/Users/stephanecau/PycharmProjects/StecauApps/FinancialApp/'
+             r'simulation_commit-1ereVerdion.csv', index=True)
