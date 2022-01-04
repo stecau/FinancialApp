@@ -18,8 +18,11 @@ def bool_pente(label, index, dataframe, limite=0.):
 
 
 # Simulation achat/vente sur 2019
-date_debut = dt.datetime(2019, 1, 7)
+#date_debut = dt.datetime(2019, 1, 7)
+#df = web.DataReader('AAPL', 'yahoo', date_debut, date_debut + dt.timedelta(days=+359))
+date_debut = dt.datetime(2020, 1, 7)
 df = web.DataReader('AAPL', 'yahoo', date_debut, date_debut + dt.timedelta(days=+359))
+#df = web.DataReader('AAPL', 'yahoo', date_debut, date_debut + dt.timedelta(days=+723))
 # print(df)
 valeur_action = float(df['Open'].values[0])
 mise_depart = 100.  # euros
@@ -46,9 +49,9 @@ my_df['SansTransaction'] = nbr_action * my_df['Close']
 #print(my_df.tail(5))
 
 # Initialisation lancement Scenario
-bool_Max = True
-bool_Max_ssSecu = True
-bool_Max_NbrActionCste = True
+bool_Max = False
+bool_Max_ssSecu = False
+bool_Max_NbrActionCste = False
 bool_S1 = True
 bool_S1_ssSecu = True
 bool_S1_NbrActionCste = True
@@ -186,13 +189,18 @@ if bool_S1:
             if i > 5:
                 # vente si diminution de l'action qui provoque diminution moyenne 2j, 3j, 4j et 7j (pente inf à -0,05) et
                 # valeur plus basse qu'il y a 14j ou pente négative de plus de 0,8
-                if not bool_pente('Close', i, my_df) and \
-                        not bool_pente('J2', i, my_df) and \
-                        not bool_pente('J3', i, my_df) and \
-                        not bool_pente('J4', i, my_df) and \
-                        not bool_pente('J7', i, my_df, -0.05) and \
-                        (my_df['Close'].values[i] <= my_df['Close'].values[i - 10] or
-                         not bool_pente('J2', i, my_df, -0.8)):
+                # if not bool_pente('Close', i, my_df) and \
+                #         not bool_pente('J2', i, my_df) and \
+                #         not bool_pente('J3', i, my_df) and \
+                #         not bool_pente('J4', i, my_df) and \
+                #         not bool_pente('J7', i, my_df, -0.05) and \
+                #         (my_df['Close'].values[i] <= my_df['Close'].values[i - 10] or
+                #          not bool_pente('J2', i, my_df, -0.8)):
+
+                # if (not bool_pente('J2', i, my_df, -1.05) and
+                #         not bool_pente('J6', i, my_df)) or \
+                if (not bool_pente('Close', i, my_df, -2.91) and not bool_pente('J3', i, my_df, -1.536689) and
+                        not bool_pente('J6', i, my_df, -0.8999564692937)):
                     vente = True
                 else:  # on ne vend pas
                     vente = False
@@ -224,8 +232,10 @@ if bool_S1:
             # Conditions pour rachat:
             # La valeur de vente <= à la valeur de l'action et on n'a pas vendu le jour d'avant OU
             # La pente de l'action ainsi que J2 et J3 sont positives
-            if my_df['ValeurVente'].values[i] <= my_df['Close'].values[i] and not my_df['Vente'].values[i - 1] \
-                    or bool_pente('Close', i, my_df) and bool_pente('J2', i, my_df) and bool_pente('J3', i, my_df):
+            #if bool_pente('Close', i, my_df, 0.895) or \
+            if (bool_pente('J4', i, my_df, 0.236366868988285) and bool_pente('J5', i, my_df, -0.794648297013266)) \
+                    or (my_df['ValeurVente'].values[i] <= my_df['Close'].values[i] and
+                        not my_df['Vente'].values[i - 1]):
                 my_df['Vente'].values[i] = False
                 my_df['Achat'].values[i] = True
                 achat = True
@@ -381,13 +391,17 @@ if bool_S1_ssSecu:
             if i > 5:
                 # vente si diminution de l'action qui provoque diminution moyenne 2j, 3j, 4j et 7j (pente inf à -0,05) et
                 # valeur plus basse qu'il y a 14j ou pente négative de plus de 0,8
-                if not bool_pente('Close', i, my_df) and \
-                        not bool_pente('J2', i, my_df) and \
-                        not bool_pente('J3', i, my_df) and \
-                        not bool_pente('J4', i, my_df) and \
-                        not bool_pente('J7', i, my_df, -0.05) and \
-                        (my_df['Close'].values[i] <= my_df['Close'].values[i - 10] or
-                         not bool_pente('J2', i, my_df, -0.8)):
+                # if not bool_pente('Close', i, my_df) and \
+                #         not bool_pente('J2', i, my_df) and \
+                #         not bool_pente('J3', i, my_df) and \
+                #         not bool_pente('J4', i, my_df) and \
+                #         not bool_pente('J7', i, my_df, -0.05) and \
+                #         (my_df['Close'].values[i] <= my_df['Close'].values[i - 10] or
+                #          not bool_pente('J2', i, my_df, -0.8)):
+                # if (not bool_pente('J2', i, my_df, -1.05) and
+                #         not bool_pente('J6', i, my_df)) or \
+                if (not bool_pente('Close', i, my_df, -2.91) and not bool_pente('J3', i, my_df, -1.536689) and
+                        not bool_pente('J6', i, my_df, -0.8999564692937)):
                     vente = True
                 else:  # on ne vend pas
                     vente = False
@@ -415,8 +429,10 @@ if bool_S1_ssSecu:
             # Conditions pour rachat:
             # La valeur de vente <= à la valeur de l'action et on n'a pas vendu le jour d'avant OU
             # La pente de l'action ainsi que J2 et J3 sont positives
-            if my_df['ValeurVente'].values[i] <= my_df['Close'].values[i] and not my_df['Vente'].values[i - 1] \
-                    or bool_pente('Close', i, my_df) and bool_pente('J2', i, my_df) and bool_pente('J3', i, my_df):
+            #if bool_pente('Close', i, my_df, 0.895) or \
+            if (bool_pente('J4', i, my_df, 0.236366868988285) and bool_pente('J5', i, my_df, -0.794648297013266)) \
+                    or (my_df['ValeurVente'].values[i] <= my_df['Close'].values[i] and
+                        not my_df['Vente'].values[i - 1]):
                 my_df['Vente'].values[i] = False
                 my_df['Achat'].values[i] = True
                 achat = True
@@ -580,13 +596,17 @@ if bool_S1_NbrActionCste:
             if i > 5:
                 # vente si diminution de l'action qui provoque diminution moyenne 2j, 3j, 4j et 7j (pente inf à -0,05) et
                 # valeur plus basse qu'il y a 14j ou pente négative de plus de 0,8
-                if not bool_pente('Close', i, my_df) and \
-                        not bool_pente('J2', i, my_df) and \
-                        not bool_pente('J3', i, my_df) and \
-                        not bool_pente('J4', i, my_df) and \
-                        not bool_pente('J7', i, my_df, -0.05) and \
-                        (my_df['Close'].values[i] <= my_df['Close'].values[i - 10] or
-                         not bool_pente('J2', i, my_df, -0.8)):
+                # if not bool_pente('Close', i, my_df) and \
+                #         not bool_pente('J2', i, my_df) and \
+                #         not bool_pente('J3', i, my_df) and \
+                #         not bool_pente('J4', i, my_df) and \
+                #         not bool_pente('J7', i, my_df, -0.05) and \
+                #         (my_df['Close'].values[i] <= my_df['Close'].values[i - 10] or
+                #          not bool_pente('J2', i, my_df, -0.8)):
+                # if (not bool_pente('J2', i, my_df, -1.05) and
+                #         not bool_pente('J6', i, my_df)) or \
+                if (not bool_pente('Close', i, my_df, -2.91) and not bool_pente('J3', i, my_df, -1.536689) and
+                        not bool_pente('J6', i, my_df, -0.8999564692937)):
                     vente = True
                 else:  # on ne vend pas
                     vente = False
@@ -614,8 +634,10 @@ if bool_S1_NbrActionCste:
             # Conditions pour rachat:
             # La valeur de vente <= à la valeur de l'action et on n'a pas vendu le jour d'avant OU
             # La pente de l'action ainsi que J2 et J3 sont positives
-            if my_df['ValeurVente'].values[i] <= my_df['Close'].values[i] and not my_df['Vente'].values[i - 1] \
-                    or bool_pente('Close', i, my_df) and bool_pente('J2', i, my_df) and bool_pente('J3', i, my_df):
+            #if bool_pente('Close', i, my_df, 0.895) or \
+            if (bool_pente('J4', i, my_df, 0.236366868988285) and bool_pente('J5', i, my_df, -0.794648297013266)) \
+                    or (my_df['ValeurVente'].values[i] <= my_df['Close'].values[i] and
+                        not my_df['Vente'].values[i - 1]):
                 my_df['Vente'].values[i] = False
                 my_df['Achat'].values[i] = True
                 achat = True
@@ -655,6 +677,12 @@ my_df.to_csv(r'/Users/stephanecau/PycharmProjects/StecauApps/FinancialApp/'
 # Visualisation
 fig, ax = plt.subplots(figsize=(16, 9))
 ax.plot(my_df.index, my_df['Close'], label='Action Apple')
+ax.plot(my_df.index, my_df['J2'], label='Action Apple moyenne sur 2 jours')
+ax.plot(my_df.index, my_df['J3'], label='Action Apple moyenne sur 3 jours')
+ax.plot(my_df.index, my_df['J4'], label='Action Apple moyenne sur 4 jours')
+ax.plot(my_df.index, my_df['J5'], label='Action Apple moyenne sur 5 jours')
+ax.plot(my_df.index, my_df['J6'], label='Action Apple moyenne sur 6 jours')
+ax.plot(my_df.index, my_df['J7'], label='Action Apple moyenne sur 7 jours')
 #ax.plot(my_df.index, my_df['Mise'], label='Evolution de la mise')
 #ax.plot(my_df.index, my_df['Secu'], label='Evolution de la Sécurisation')
 #ax.plot(my_df.index, my_df['PorteFeuille'], label='Evolution du PorteFeuille')
