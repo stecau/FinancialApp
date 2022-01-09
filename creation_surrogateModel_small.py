@@ -230,11 +230,11 @@ bool_S1_ssSecu = False
 bool_S1_NbrActionCste = False
 dico_mem = dict()
 
-for jour in range(0, 30, 1):
+for jour in range(0, 75, 1):
     # Simulation achat/vente sur 2019
     date_debut = dt.datetime(2019, 1, 7)
     df = web.DataReader('AAPL', 'yahoo', date_debut,
-                        date_debut + dt.timedelta(days=+360 + jour))
+                        date_debut + dt.timedelta(days=+400 + jour))
     #print(df)
     if jour == 0:
         valeur_action = float(df['Close'].values[-1])
@@ -248,9 +248,9 @@ for jour in range(0, 30, 1):
     #print(f"df.index[-1] = {df.index[-1]}")
     #print(f"date_debut + dt.timedelta(days=+360 + jour) = "
     #      f"{date_debut + dt.timedelta(days=+360 + jour)}")
-    print(f"jour = {jour} ({date_debut + dt.timedelta(days=+360 + jour)})")
+    print(f"jour = {jour} ({date_debut + dt.timedelta(days=+400 + jour)})")
 
-    if df.index[-1] == date_debut + dt.timedelta(days=+360 + jour):
+    if df.index[-1] == date_debut + dt.timedelta(days=+400 + jour):
 
         # Creation du dataframe
         my_df_full = pd.DataFrame(data=df['Close'])
@@ -294,41 +294,39 @@ for jour in range(0, 30, 1):
                                                                      my_df_full[value].shift()).mean(axis=0).values),
                                       "Sig": float(pd.DataFrame(data=my_df_full[value] -
                                                                      my_df_full[value].shift()).std(axis=0).values)}
+            # Pour Vente:
             if value == "Close":
                 dico_vente["pente"][value] = [0.]
             if value == "J5" or value == "J10" or value == "J15" or value == "J20":
                 dico_vente["pente"][value] = [False,
-                                              dico_loiNormale[value]["Moy"] - 1 * dico_loiNormale[value]["Sig"],
+                                              #dico_loiNormale[value]["Moy"] - 1. * dico_loiNormale[value]["Sig"],
+                                              #dico_loiNormale[value]["Moy"] - 0.75 * dico_loiNormale[value]["Sig"],
                                               dico_loiNormale[value]["Moy"] - 0.5 * dico_loiNormale[value]["Sig"],
                                               dico_loiNormale[value]["Moy"] - 0.25 * dico_loiNormale[value]["Sig"],
-                                              dico_loiNormale[value]["Moy"] - 0.125 * dico_loiNormale[value]["Sig"],
+                                              dico_loiNormale[value]["Moy"] - 0.2 * dico_loiNormale[value]["Sig"],
+                                              dico_loiNormale[value]["Moy"] - 0.15 * dico_loiNormale[value]["Sig"],
+                                              dico_loiNormale[value]["Moy"] - 0.1 * dico_loiNormale[value]["Sig"],
+                                              dico_loiNormale[value]["Moy"] - 0.05 * dico_loiNormale[value]["Sig"],
                                               dico_loiNormale[value]["Moy"],
-                                              dico_loiNormale[value]["Moy"] + 0.125 * dico_loiNormale[value]["Sig"],
-                                              dico_loiNormale[value]["Moy"] + 0.25 * dico_loiNormale[value]["Sig"],
-                                              dico_loiNormale[value]["Moy"] + 0.5 * dico_loiNormale[value]["Sig"],
-                                              dico_loiNormale[value]["Moy"] + 1 * dico_loiNormale[value]["Sig"]]
-            # if value == "J3":
-            #     dico_vente["pente"][value] = [dico_loiNormale[value]["Moy"] - 1.3 * dico_loiNormale[value]["Sig"]]
-            # if value == "J6":
-            #     dico_vente["pente"][value] = [dico_loiNormale[value]["Moy"] - 1.2 * dico_loiNormale[value]["Sig"]]
-                # dico_vente["pente"][value] = [False,
-                #                               dico_loiNormale[value]["Moy"] - 3 * dico_loiNormale[value]["Sig"],
-                #                               dico_loiNormale[value]["Moy"] - 2 * dico_loiNormale[value]["Sig"],
-                #                               dico_loiNormale[value]["Moy"] - 1 * dico_loiNormale[value]["Sig"],
-                #                               dico_loiNormale[value]["Moy"] - 0.5 * dico_loiNormale[value]["Sig"],
-                #                               dico_loiNormale[value]["Moy"],
-                #                               dico_loiNormale[value]["Moy"] + 0.5 * dico_loiNormale[value]["Sig"],
-                #                               dico_loiNormale[value]["Moy"] + 1 * dico_loiNormale[value]["Sig"],
-                #                               dico_loiNormale[value]["Moy"] + 2 * dico_loiNormale[value]["Sig"],
-                #                               dico_loiNormale[value]["Moy"] + 3 * dico_loiNormale[value]["Sig"],
-                #                               ]
-
-            # elif value == "J3" or value == "J4" or value == "J5" or value == "J6": # or value == "J7":
-            #     dico_vente["pente"][value] = [False, dico_loiNormale[value]["Moy"] - dico_loiNormale[value]["Sig"],
-            #                                   dico_loiNormale[value]["Moy"],
-            #                                   dico_loiNormale[value]["Moy"] + dico_loiNormale[value]["Sig"]]
+                                              dico_loiNormale[value]["Moy"] + 0.05 * dico_loiNormale[value]["Sig"],
+                                              dico_loiNormale[value]["Moy"] + 0.1 * dico_loiNormale[value]["Sig"],
+                                              dico_loiNormale[value]["Moy"] + 0.15 * dico_loiNormale[value]["Sig"],
+                                              dico_loiNormale[value]["Moy"] + 0.2 * dico_loiNormale[value]["Sig"],
+                                              #dico_loiNormale[value]["Moy"] + 0.25 * dico_loiNormale[value]["Sig"],
+                                              #dico_loiNormale[value]["Moy"] + 0.5 * dico_loiNormale[value]["Sig"]
+                                              ]
+            # Pour Achat
             if value == "Close":
                 dico_achat["pente"][value] = [0.]
+            if value == "J5":
+                dico_achat["pente"][value] = [dico_loiNormale[value]["Moy"] - 0.1 * dico_loiNormale[value]["Sig"],
+                                              dico_loiNormale[value]["Moy"] - 0.2 * dico_loiNormale[value]["Sig"]]
+            #if value == "J10" or value == "J15" or value == "J20":
+            #    dico_achat["pente"][value] = [dico_loiNormale[value]["Moy"] - 0.5 * dico_loiNormale[value]["Sig"],
+            #                                  dico_loiNormale[value]["Moy"] - 0.25 * dico_loiNormale[value]["Sig"],
+            #                                  dico_loiNormale[value]["Moy"] - 0.125 * dico_loiNormale[value]["Sig"],
+            #                                  dico_loiNormale[value]["Moy"],
+            #                                  ]
             #print(dico_loiNormale)
         #print(dico_extremum)
         print(dico_loiNormale)
@@ -411,7 +409,7 @@ for jour in range(0, 30, 1):
             #print(f"my_df_jourJ = \n{my_df_jourJ}")
 
             #print(my_df_jourJ.iloc[i])
-            if achat:  # On possède des actions
+            if achat and jour > 0:  # On possède des actions
                 # Regarde si vente
                 if bool_pente('Close', 1, my_df_jourJ):  # Pas de vente l'action augmente ou stagne
                     vente = False
@@ -880,9 +878,9 @@ for jour in range(0, 30, 1):
                     if vente and not achat and not my_df_jourJ['Vente'].values[1] and not my_df_jourJ['Achat'].values[1]:
                         # On a vendu et pas encore racheté.
                         # Conditions pour rachat
-                        if bool_achat_scenario(1, my_df_jourJ, **model_achat) or \
-                                (my_df_jourJ['ValeurVente'].values[1] <= my_df_jourJ['Close'].values[1] and
-                                 not my_df_jourJ['Vente'].values[0]):
+                        if bool_achat_scenario(1, my_df_jourJ, **model_achat):  #or \
+                                #(my_df_jourJ['ValeurVente'].values[1] <= my_df_jourJ['Close'].values[1] and
+                                 #not my_df_jourJ['Vente'].values[0]):
                             my_df_jourJ['Vente'].values[1] = False
                             my_df_jourJ['Achat'].values[1] = True
                             achat = True
@@ -1195,10 +1193,10 @@ for jour in range(0, 30, 1):
             my_df_graph = my_df_graph.append(my_df_graph_temp)
         #print(f"my_df_graph :\n{my_df_graph}")
 
-my_df_graph.to_csv(r'/Users/stephanecau/PycharmProjects/StecauApps/FinancialApp/'
+    my_df_graph.to_csv(r'/Users/stephanecau/PycharmProjects/StecauApps/FinancialApp/'
                    r'simu_surrogate_small.csv', index=True)
 
-df_final.to_csv(r'/Users/stephanecau/PycharmProjects/StecauApps/FinancialApp/'
+    df_final.to_csv(r'/Users/stephanecau/PycharmProjects/StecauApps/FinancialApp/'
                 r'simu_surrogate_small_sumup.csv', index=True)
 
 # Visualisation

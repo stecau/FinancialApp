@@ -4,56 +4,91 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pandas_datareader.data as web
+from Internet import Internet
+from Action import Action
+from Affichage import Affichage
+from Classement import Classement
 
 
-def bool_pente(label, index, dataframe, limite=0.):
-    pente = (dataframe[label].values[index] - dataframe[label].values[index - 1]) / (index - (index - 1))
-    #print(f'pente : {pente}')
-    if pente >= limite:
-        return True
-    return False
-
-
-# Definition des variables
+# DEFINITIONS DES VARIABLES
 debut = dt.datetime(2019, 1, 1)  # Date de debut recup donnees
-fin = dt.datetime(2019, 12, 31)  # Date de fin recup donnees
-tickers = list()  # Liste pour les valeurs
-tickers.append('AAPL')  # Ajout apple valeur
-#tickers.append('MSFT')  # Ajout microsoft valeur
-df = web.DataReader('AAPL', 'yahoo', debut, fin)
-#print(df.head())
+fin = dt.datetime(2021, 12, 31)  # Date de fin recup donnees
+# d_tickers = {  # Dictionnaire pour les valeurs
+#     'AAPL': {'nom': 'Apple', 'label': 'Close'},
+#     'MSFT': {'nom': 'Microsoft', 'label': 'Close'},
+# }
+d_tickers = {  # Dictionnaire pour les valeurs
+    "AI.PA": {"nom": "Air liquide", "label": "Close"},
+    "AIR.PA": {"nom": "Airbus", "label": "Close"},
+    "ALO.PA": {"nom": "Alstom", "label": "Close"},
+    "MT.AS": {"nom": "ArcelorMittal", "label": "Close"},
+    "CS.PA": {"nom": "Axa", "label": "Close"},
+    "BNP.PA": {"nom": "BNP Paribas", "label": "Close"},
+    "EN.PA": {"nom": "Bouygues", "label": "Close"},
+    "CAP.PA": {"nom": "Capgemini", "label": "Close"},
+    "CA.PA": {"nom": "Carrefour", "label": "Close"},
+    "ACA.PA": {"nom": "Credit agricole", "label": "Close"},
+    "BN.PA": {"nom": "Danone", "label": "Close"},
+    "DSY.PA": {"nom": "Dassault Systemes", "label": "Close"},
+    "ENGI.PA": {"nom": "Engie", "label": "Close"},
+    "EL.PA": {"nom": "EssilorLuxottica", "label": "Close"},
+    "ERF.PA": {"nom": "EUROFINS SCIENTIFIC", "label": "Close"},
+    "RMS.PA": {"nom": "Hermes International", "label": "Close"},
+    "KER.PA": {"nom": "Kering", "label": "Close"},
+    "OR.PA": {"nom": "L-Oreal", "label": "Close"},
+    "LR.PA": {"nom": "Legrand", "label": "Close"},
+    "MC.PA": {"nom": "LVMH", "label": "Close"},
+    "ML.PA": {"nom": "Michelin", "label": "Close"},
+    "ORA.PA": {"nom": "Orange", "label": "Close"},
+    "RI.PA": {"nom": "Pernod Ricard", "label": "Close"},
+    "PUB.PA": {"nom": "Publicis Groupe", "label": "Close"},
+    "RNO.PA": {"nom": "Renault", "label": "Close"},
+    "SAF.PA": {"nom": "Safran", "label": "Close"},
+    "SGO.PA": {"nom": "Saint-Gobain", "label": "Close"},
+    "SAN.PA": {"nom": "Sanofi", "label": "Close"},
+    "SU.PA": {"nom": "Schneider Electric", "label": "Close"},
+    "GLE.PA": {"nom": "Societe generale", "label": "Close"},
+    "STLA.PA": {"nom": "Stellantis", "label": "Close"},
+    "STM.PA": {"nom": "STMicroelectronics", "label": "Close"},
+    "TEP.PA": {"nom": "Teleperformance", "label": "Close"},
+    "HO.PA": {"nom": "Thales", "label": "Close"},
+    "TTE.PA": {"nom": "TotalEnergies", "label": "Close"},
+    "URW.AS": {"nom": "Unibail-Rodamco-Westfield", "label": "Close"},
+    "VIE.PA": {"nom": "Veolia", "label": "Close"},
+    "DG.PA": {"nom": "Vinci", "label": "Close"},
+    "VIV.PA": {"nom": "Vivendi", "label": "Close"},
+    "WLN.PA": {"nom": "Worldline", "label": "Close"}
+}
+
+# RECUPERATION DATAFRAME DES ACTIONS SUR INTERNET
+df = Internet.get_actions_df(d_tickers, debut, fin)
+df.to_csv(r'/Users/stephanecau/PycharmProjects/StecauApps/FinancialApp/action_CAC40.csv', index=True)
+#df = pd.read_csv(r'/Users/stephanecau/PycharmProjects/StecauApps/FinancialApp/action_CAC40.csv', index_col=0)
+
+
+# CREATION DES INSTANCES D'ACTIONS
+for key, valeur in d_tickers.items():
+    action = Action(valeur['nom'], valeur['label'], key, df)
+print(Action.l_actions)
 
 # Visualisation des donnees de fermeture
-#df['Close'].plot()
-#plt.show()
+#Affichage.affichage_actions()
 
-# Calcul des moyennes sur 5 jours (1 semaine) [pas de bourse le samedi et le dimanche]
-# Calcul de la moyenne sur 2 jours
-df['2J'] = df['Close'].rolling(window=2).mean()
-# Calcul de la moyenne sur 3 jours
-df['3J'] = df['Close'].rolling(window=3).mean()
-# Calcul de la moyenne sur 4 jours
-df['4J'] = df['Close'].rolling(window=4).mean()
-# Calcul de la moyenne sur 5 jours
-df['5J'] = df['Close'].rolling(window=5).mean()
-# Calcul de la moyenne sur 30 jours (1 mois)
-df['6J'] = df['Close'].rolling(window=6).mean()
-# Calcul de la moyenne sur 30 jours (1 mois)
-df['7J'] = df['Close'].rolling(window=7).mean()
+# Affichage spécifiques
+Affichage.affichage_selections(Action.l_actions[Action.action_index('Air liquide')].df,
+                               **{'Air liquide_Close': 'Cours Air liquide à la fermeture',
+                                  'Air liquide_J5': 'Moyenne glissante Air liquide sur 5 jours'})
 
-# Visualisation
-fig, ax = plt.subplots(figsize=(16, 9))
-ax.plot(df.index, df['Close'], label='Apple')
-ax.plot(df.index, df['2J'], label='Apple moyenne sur 2 jours')
-ax.plot(df.index, df['3J'], label='Apple moyenne sur 3 jours')
-ax.plot(df.index, df['4J'], label='Apple moyenne sur 4 jours')
-ax.plot(df.index, df['5J'], label='Apple moyenne sur 5 jours')
-ax.plot(df.index, df['6J'], label='Apple moyenne sur 6 jours')
-ax.plot(df.index, df['7J'], label='Apple moyenne sur 7 jours')
-ax.set_xlabel('Date')
-ax.set_ylabel('Valeur de fermeture')
-ax.legend()
-plt.show()
+print(f"Liste labels action Air liquide = {Action.l_actions[Action.action_index('Air liquide')].l_labels}")
+
+# REALISATION DU CLASSEMENT DES ACTIONS
+classement = Classement(Action.l_actions)
+Affichage.affichage_actions()
+toto
+
+
+
+
 
 # Simulation achat/vente sur 2019
 date_debut = dt.datetime(2019, 1, 2)
