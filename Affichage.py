@@ -26,3 +26,16 @@ class Affichage:
         ax.set_ylabel('Valeur')
         ax.legend()
         plt.show()
+
+    @staticmethod
+    def affichage_classement(classement):
+        l_df = list()
+        for action, value in classement.items():
+            # print(f"key = {key}")
+            # print(f"value = {value}")
+            df = pd.DataFrame(data=value['Classement'], index=[action])
+            l_df.append(df)
+        df = pd.concat(l_df, axis=0)
+        df.plot()
+        plt.show()
+

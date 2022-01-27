@@ -48,7 +48,7 @@ d_tickers = {  # Dictionnaire pour les valeurs
     "SAN.PA": {"nom": "Sanofi", "label": "Close"},
     "SU.PA": {"nom": "Schneider Electric", "label": "Close"},
     "GLE.PA": {"nom": "Societe generale", "label": "Close"},
-    "STLA.PA": {"nom": "Stellantis", "label": "Close"},
+    #"STLA.PA": {"nom": "Stellantis", "label": "Close"},
     "STM.PA": {"nom": "STMicroelectronics", "label": "Close"},
     "TEP.PA": {"nom": "Teleperformance", "label": "Close"},
     "HO.PA": {"nom": "Thales", "label": "Close"},
@@ -61,10 +61,11 @@ d_tickers = {  # Dictionnaire pour les valeurs
 }
 
 # RECUPERATION DATAFRAME DES ACTIONS SUR INTERNET
-df = Internet.get_actions_df(d_tickers, debut, fin)
-df.to_csv(r'/Users/stephanecau/PycharmProjects/StecauApps/FinancialApp/action_CAC40.csv', index=True)
-#df = pd.read_csv(r'/Users/stephanecau/PycharmProjects/StecauApps/FinancialApp/action_CAC40.csv', index_col=0)
-
+#df = Internet.get_actions_df(d_tickers, debut, fin)
+#df.to_csv(r'/Users/stephanecau/PycharmProjects/StecauApps/FinancialApp/action_CAC40.csv', index=True)
+df = pd.read_csv(r'/Users/stephanecau/PycharmProjects/StecauApps/FinancialApp/action_CAC40.csv',
+                 index_col=0, header=[0, 1])
+df = df.loc[str(dt.datetime(2020, 1, 1)):str(dt.datetime(2020, 2, 28))]
 
 # CREATION DES INSTANCES D'ACTIONS
 for key, valeur in d_tickers.items():

@@ -1,4 +1,6 @@
 import pandas as pd
+from Action import Action
+from Affichage import Affichage
 
 
 class Classement:
@@ -8,7 +10,7 @@ class Classement:
         self.total = pt_init * len(l_actions)
         dico_extremum = dict()
         for action in l_actions:
-            self.classement[action.nom] = {"Classement": pt_init}
+            self.classement[action.nom] = {"Classement": {"Total": 0}}
             for label in action.l_labels:
                 data_key = label.replace(action.nom + '_', '')
                 delta = 5  # evaluation sur 5 jours glissants
@@ -26,9 +28,10 @@ class Classement:
         print(self.total)
         total = 0
         for action, value in self.classement.items():
-            total += value['Classement']
-            print(action, value['Classement'])
+            total += value['Classement']['Total']
+            print(action, value['Classement']['Total'])
         print(total)
+        Affichage.affichage_classement(self.classement)
 
     def calcul_classement(self, pt_init):
         df = self.dataframe_datakey()
@@ -44,36 +47,42 @@ class Classement:
         # Répartition des points
         for action, value in self.classement.items():
             #print(action, value['J5'], moyenne.at['J5'], sigma.at['J5'])
-            if value['J5'] == moyenne.at['J5']:
-                value['Classement'] = moyenne.at['Classement']
-            elif value['J5'] < moyenne.at['J5'] - 6 * sigma.at['J5']:
-                value['Classement'] = 0
-            elif moyenne.at['J5'] - 6 * sigma.at['J5'] < value['J5'] <= moyenne.at['J5'] - 5 * sigma.at['J5']:
-                value['Classement'] = pt_init - 6 * (nbr_pt_datakey / 12)
-            elif moyenne.at['J5'] - 5 * sigma.at['J5'] < value['J5'] <= moyenne.at['J5'] - 4 * sigma.at['J5']:
-                value['Classement'] = pt_init - 5 * (nbr_pt_datakey / 12)
-            elif moyenne.at['J5'] - 4 * sigma.at['J5'] < value['J5'] <= moyenne.at['J5'] - 3 * sigma.at['J5']:
-                value['Classement'] = pt_init - 4 * (nbr_pt_datakey / 12)
-            elif moyenne.at['J5'] - 3 * sigma.at['J5'] < value['J5'] <= moyenne.at['J5'] - 2 * sigma.at['J5']:
-                value['Classement'] = pt_init - 3 * (nbr_pt_datakey / 12)
-            elif moyenne.at['J5'] - 2 * sigma.at['J5'] < value['J5'] <= moyenne.at['J5'] - 1 * sigma.at['J5']:
-                value['Classement'] = pt_init - 2 * (nbr_pt_datakey / 12)
-            elif moyenne.at['J5'] - 1 * sigma.at['J5'] < value['J5'] < moyenne.at['J5']:
-                value['Classement'] = pt_init - 1 * (nbr_pt_datakey / 12)
-            elif moyenne.at['J5'] < value['J5'] < moyenne.at['J5'] + 1 * sigma.at['J5']:
-                value['Classement'] = pt_init + 1 * (nbr_pt_datakey / 12)
-            elif moyenne.at['J5'] + 1 * sigma.at['J5'] <= value['J5'] < moyenne.at['J5'] + 2 * sigma.at['J5']:
-                value['Classement'] = pt_init + 2 * (nbr_pt_datakey / 12)
-            elif moyenne.at['J5'] + 2 * sigma.at['J5'] <= value['J5'] < moyenne.at['J5'] + 3 * sigma.at['J5']:
-                value['Classement'] = pt_init + 3 * (nbr_pt_datakey / 12)
-            elif moyenne.at['J5'] + 3 * sigma.at['J5'] <= value['J5'] < moyenne.at['J5'] + 4 * sigma.at['J5']:
-                value['Classement'] = pt_init + 4 * (nbr_pt_datakey / 12)
-            elif moyenne.at['J5'] + 4 * sigma.at['J5'] <= value['J5'] < moyenne.at['J5'] + 5 * sigma.at['J5']:
-                value['Classement'] = pt_init + 5 * (nbr_pt_datakey / 12)
-            elif moyenne.at['J5'] + 5 * sigma.at['J5'] <= value['J5'] < moyenne.at['J5'] + 6 * sigma.at['J5']:
-                value['Classement'] = pt_init + 6 * (nbr_pt_datakey / 12)
-            elif value['J5'] > moyenne.at['J5'] + 6 * sigma.at['J5']:
-                value['Classement'] = 100
+            #print(f"Action.l_actions[Action.action_index(action)].l_labels = {Action.l_actions[Action.action_index(action)].l_labels}")
+            for label in Action.l_actions[Action.action_index(action)].l_labels:
+                label = label.replace(Action.l_actions[Action.action_index(action)].nom + '_', '')
+                print(f"Action = {Action.l_actions[Action.action_index(action)].nom}")
+                print(f"label = {label}")
+                if value[label] == moyenne.at[label]:
+                    value['Classement'][label] = moyenne.at['Classement']
+                elif value[label] < moyenne.at[label] - 6 * sigma.at[label]:
+                    value['Classement'][label] = 0
+                elif moyenne.at[label] - 6 * sigma.at[label] < value[label] <= moyenne.at[label] - 5 * sigma.at[label]:
+                    value['Classement'][label] = pt_init - 6 * (nbr_pt_datakey / 12)
+                elif moyenne.at[label] - 5 * sigma.at[label] < value[label] <= moyenne.at[label] - 4 * sigma.at[label]:
+                    value['Classement'][label] = pt_init - 5 * (nbr_pt_datakey / 12)
+                elif moyenne.at[label] - 4 * sigma.at[label] < value[label] <= moyenne.at[label] - 3 * sigma.at[label]:
+                    value['Classement'][label] = pt_init - 4 * (nbr_pt_datakey / 12)
+                elif moyenne.at[label] - 3 * sigma.at[label] < value[label] <= moyenne.at[label] - 2 * sigma.at[label]:
+                    value['Classement'][label] = pt_init - 3 * (nbr_pt_datakey / 12)
+                elif moyenne.at[label] - 2 * sigma.at[label] < value[label] <= moyenne.at[label] - 1 * sigma.at[label]:
+                    value['Classement'][label] = pt_init - 2 * (nbr_pt_datakey / 12)
+                elif moyenne.at[label] - 1 * sigma.at[label] < value[label] < moyenne.at[label]:
+                    value['Classement'][label] = pt_init - 1 * (nbr_pt_datakey / 12)
+                elif moyenne.at[label] < value[label] < moyenne.at[label] + 1 * sigma.at[label]:
+                    value['Classement'][label] = pt_init + 1 * (nbr_pt_datakey / 12)
+                elif moyenne.at[label] + 1 * sigma.at[label] <= value[label] < moyenne.at[label] + 2 * sigma.at[label]:
+                    value['Classement'][label] = pt_init + 2 * (nbr_pt_datakey / 12)
+                elif moyenne.at[label] + 2 * sigma.at[label] <= value[label] < moyenne.at[label] + 3 * sigma.at[label]:
+                    value['Classement'][label] = pt_init + 3 * (nbr_pt_datakey / 12)
+                elif moyenne.at[label] + 3 * sigma.at[label] <= value[label] < moyenne.at[label] + 4 * sigma.at[label]:
+                    value['Classement'][label] = pt_init + 4 * (nbr_pt_datakey / 12)
+                elif moyenne.at[label] + 4 * sigma.at[label] <= value[label] < moyenne.at[label] + 5 * sigma.at[label]:
+                    value['Classement'][label] = pt_init + 5 * (nbr_pt_datakey / 12)
+                elif moyenne.at[label] + 5 * sigma.at[label] <= value[label] < moyenne.at[label] + 6 * sigma.at[label]:
+                    value['Classement'][label] = pt_init + 6 * (nbr_pt_datakey / 12)
+                elif value[label] > moyenne.at[label] + 6 * sigma.at[label]:
+                    value['Classement'][label] = 100
+                value['Classement']['Total'] += value['Classement'][label]
 
     def dataframe_datakey(self):
         l_df = list()
@@ -83,6 +92,6 @@ class Classement:
             df = pd.DataFrame(data=value, index=[key])
             l_df.append(df)
         df = pd.concat(l_df, axis=0)
-        #print(df)
+        print(df)
         return df
 
