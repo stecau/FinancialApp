@@ -5,3 +5,5 @@ pandas-datareader==0.10.0
 jupyter==1.0.0
 seaborn==0.11.2
 statsmodels==0.13.1
+mplfinance==0.12.8b9
+pandas-ta==0.3.14b0
